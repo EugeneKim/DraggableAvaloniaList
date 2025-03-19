@@ -1,0 +1,69 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:vm="using:DraggableAvaloniaList.ViewModels"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:b="clr-namespace:DraggableAvaloniaList.Behaviors"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+		x:Class="DraggableAvaloniaList.Views.MainWindow"
+		x:DataType="vm:MainWindowViewModel"
+		Icon="/Assets/avalonia-logo.ico"
+		Title="DraggableAvaloniaList"
+		Width="800" Height="600">
+	<Window.Styles>
+		<Style Selector="StackPanel.ctrl">
+			<Setter Property="Margin" Value="8"/>
+			<Setter Property="Orientation" Value="Horizontal"/>
+		</Style>
+
+		<Style Selector="ListBox.ItemsDragAndDrop">
+			<Style.Resources>
+				<b:ItemsListBoxDropHandler x:Key="ItemsListBoxDropHandler" />
+			</Style.Resources>
+			<Setter Property="(Interaction.Behaviors)">
+				<BehaviorCollectionTemplate>
+					<BehaviorCollection>
+						<ContextDropBehavior Handler="{StaticResource ItemsListBoxDropHandler}" />
+						<b:MoveItemTriggerBehavior
+							AllPeople="{Binding AllPeople}"
+							NotifyMoveItemCompleteCommand="{Binding NotifyMoveItemCompleteCommand}" />
+					</BehaviorCollection>
+				</BehaviorCollectionTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="ListBox.ItemsDragAndDrop ListBoxItem">
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="(Interaction.Behaviors)">
+				<BehaviorCollectionTemplate>
+					<BehaviorCollection>
+						<ContextDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3" />
+					</BehaviorCollection>
+				</BehaviorCollectionTemplate>
+			</Setter>
+		</Style>
+	</Window.Styles>
+	<Design.DataContext>
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
+	<Grid RowDefinitions="Auto, *">
+		<StackPanel Classes="ctrl">
+			<Button Content="Add Item" Command="{Binding AddItemCommand}"/>
+			<Button Content="Delete Item" Command="{Binding DeleteItemCommand}"/>
+			<Button Content="Delete All Items" Command="{Binding DeleteAllItemsCommand}"/>
+		</StackPanel>
+		<ListBox Grid.Row="1"
+		         Classes="ItemsDragAndDrop"
+				 ItemsSource="{Binding People}"
+				 SelectedIndex="{Binding SelectedPeopleIndex}">
+			<ListBox.ItemTemplate>
+				<DataTemplate x:DataType="vm:PersonViewModel">
+					<Grid ColumnDefinitions="2*, *, *">
+						<TextBlock Text="{Binding Name}" />
+						<TextBlock Grid.Column="1" Text="{Binding Age}" />
+						<TextBlock Grid.Column="2" Text="{Binding Gender}" />
+					</Grid>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+	</Grid>
+</Window>
